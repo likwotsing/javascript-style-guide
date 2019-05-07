@@ -7,3 +7,8 @@ Google JavaScript Style Guide
 
 [中文地址](https://likwotsing.github.io/javascript-style-guide/)
 
+# 本地运行
+```
+docsify serve docs
+```
+
