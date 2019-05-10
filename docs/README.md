@@ -117,4 +117,43 @@ goog.setTestOnly();
 
 在`goog.require`声明后就会完成导入，在模块声明后会立即重组。每个`goog.require`会被分配一个常量别名，或者拆解后分配多个常量别名。这些别名时唯一能够识别`required`的依赖，无论是在代码中还是在类型注释中：除了`goog.require`外都不使用完全限定名。别名应该匹配导入模块的最后一个使用点分隔符的部分，如果需要消除歧义，也可使包括更多的部分（使用适当的外层包裹，以便别名仍然能正确识别其类型），或者显著提高了可阅读性。`goog.require`不能出现在文件的其他任何地方。
 
-如果一个模块的导入只是为了使用其
+如果一个模块的导入只是为了使用它的side effects，那就可以省略别名，但是完全限定名可能不会出现在文件的其他地方。需要写一条注释说明为什么这么做，并设置下让编译器不发出警告。
+
+这些声明行按照以下规则进行排序：所有的requires都需要在左边有一个的名称，这些名称按照字母排序。解构赋值的requires，会再次按照左边的名称排序。最后，任何`goog.require`的调用都是独立的（通常引入这些模块只是为了他们的side effects）。
+
+> 建议：没有必要记住这个顺序并手动执行它。可以依赖IDE来报告未正确排序的requires
+
+如果一个很长的别名或模块名字超过了一行80列的限制，那它**必须**被包裹住：goog.require是一个例外。
+
+例子：
+```
+const MyClass = goog.require('some.package.MyClass');
+const NsMyClass = goog.require('other.ns.MyClass');
+const googAsserts = goog.require('goog.asserts');
+const testingAsserts = goog.require('goog.testing.asserts');
+const than80columns = goog.require('pretend.this.is.longer.than80columns');
+const {clear, forEach, map} = goog.require('goog.array');
+/** @suppress {extraRequire} Initializes MyFramework. */
+goog.require('my.framework.initialization');
+```
+
+不合法的：
+const randomName = goog.require('something.else'); // name must match
+
+const {clear, forEach, map} = // don't break lines
+    goog.require('goog.array');
+
+function someFunction() {
+  const alias = goog.require('my.long.name.alias'); // must be at top level
+  // …
+}
+
+### 3.4.1 goog.forwardDeclare
+
+`goog.forwardDeclare`是一个不常用但是非常有用的一个工具，可以break循环依赖或引用较晚下载的代码。这些语句会跟在`goog.require`之后并被组合在一起。一个`goog.forwardDeclare`必须跟在相同的`goog.require`风格规则后面。
+
+## 3.5 文件的实现
+
+实际实现在声明的所有的依赖信息之后（至少用一行空白分隔）。
+
+这可能包括任何本地模块的声明（常量、变量、类、函数等），以及任何导出语句。
