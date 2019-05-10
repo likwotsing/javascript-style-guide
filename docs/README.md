@@ -138,6 +138,7 @@ goog.require('my.framework.initialization');
 ```
 
 不合法的：
+```
 const randomName = goog.require('something.else'); // name must match
 
 const {clear, forEach, map} = // don't break lines
@@ -147,6 +148,7 @@ function someFunction() {
   const alias = goog.require('my.long.name.alias'); // must be at top level
   // …
 }
+```
 
 ### 3.4.1 goog.forwardDeclare
 
